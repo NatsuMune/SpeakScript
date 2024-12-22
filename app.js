@@ -20,6 +20,13 @@ if (!('webkitSpeechRecognition' in window)) {
     languageSelect.disabled = true;
 }
 
+if (!navigator.onLine) {
+    status.textContent = 'Please connect to the internet to use this application';
+    startBtn.disabled = true;
+    stopBtn.disabled = true;
+    languageSelect.disabled = true;
+}
+
 function formatTimestamp(date) {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
@@ -276,56 +283,4 @@ document.addEventListener('visibilitychange', () => {
         stopBtn.disabled = true;
     }
 });
-
-// Update the Service Worker registration
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', async () => {
-        try {
-            const registration = await navigator.serviceWorker.register('sw.js');
-            console.log('ServiceWorker registration successful with scope:', registration.scope);
-
-            // Check for updates
-            registration.addEventListener('updatefound', () => {
-                const newWorker = registration.installing;
-                newWorker.addEventListener('statechange', () => {
-                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        // New content is available, show refresh prompt
-                        if (confirm('New version available! Click OK to refresh.')) {
-                            window.location.reload();
-                        }
-                    }
-                });
-            });
-
-            // Initial online/offline status
-            updateOnlineStatus();
-        } catch (err) {
-            console.error('ServiceWorker registration failed:', err);
-        }
-    });
-}
-
-// Add these event listeners for online/offline status
-window.addEventListener('online', updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
-
-// Update online status function
-function updateOnlineStatus() {
-    if (!navigator.onLine) {
-        status.textContent = 'Offline mode - Some features may be limited';
-        status.style.backgroundColor = '#fff3cd';
-        status.style.color = '#856404';
-        status.style.padding = '8px';
-        status.style.borderRadius = '4px';
-        startBtn.disabled = true;
-    } else {
-        status.textContent = 'Click Start to begin recording';
-        status.style.backgroundColor = '';
-        status.style.color = '';
-        status.style.padding = '';
-        status.style.borderRadius = '';
-        if ('webkitSpeechRecognition' in window) {
-            startBtn.disabled = false;
-        }
-    }
-} 
+ 
