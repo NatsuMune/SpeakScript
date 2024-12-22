@@ -277,11 +277,53 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
-// Service Worker Registration
+// Add this at the beginning of app.js
+function updateOnlineStatus() {
+    const status = document.getElementById('status');
+    if (!navigator.onLine) {
+        status.textContent = 'Offline mode - Some features may be limited';
+        status.style.backgroundColor = '#fff3cd';
+        status.style.color = '#856404';
+        status.style.padding = '8px';
+        status.style.borderRadius = '4px';
+        startBtn.disabled = true;
+    } else {
+        status.textContent = 'Click Start to begin recording';
+        status.style.backgroundColor = '';
+        status.style.color = '';
+        status.style.padding = '';
+        status.style.borderRadius = '';
+        startBtn.disabled = false;
+    }
+}
+
+// Add these event listeners after the existing ones
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
+// Update the Service Worker registration
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-            .then(registration => console.log('ServiceWorker registered'))
-            .catch(err => console.log('ServiceWorker registration failed:', err));
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('ServiceWorker registered with scope:', registration.scope);
+                
+                // Check for updates
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // New content is available, show refresh prompt
+                            if (confirm('New version available! Click OK to refresh.')) {
+                                window.location.reload();
+                            }
+                        }
+                    });
+                });
+            })
+            .catch(err => console.error('ServiceWorker registration failed:', err));
     });
+
+    // Handle offline mode on initial load
+    updateOnlineStatus();
 } 
