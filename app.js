@@ -6,6 +6,9 @@ const output = document.getElementById('output');
 const languageSelect = document.getElementById('languageSelect');
 const copyBtn = document.getElementById('copyBtn');
 const clearBtn = document.getElementById('clearBtn');
+const confirmDialog = document.getElementById('confirmDialog');
+const confirmBtn = document.getElementById('confirmBtn');
+const cancelBtn = document.getElementById('cancelBtn');
 
 let isRecording = false;
 
@@ -51,7 +54,22 @@ function createTranscriptEntry(timestamp, language, text) {
     return entry;
 }
 
-function copyTranscript() {
+function showCopyFeedback() {
+    const originalText = copyBtn.querySelector('span').textContent;
+    const originalSvg = copyBtn.querySelector('svg').innerHTML;
+    
+    // Change to checkmark
+    copyBtn.querySelector('span').textContent = 'Copied!';
+    copyBtn.querySelector('svg').innerHTML = '<path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
+    
+    // Revert after 2 seconds
+    setTimeout(() => {
+        copyBtn.querySelector('span').textContent = originalText;
+        copyBtn.querySelector('svg').innerHTML = originalSvg;
+    }, 2000);
+}
+
+async function copyTranscript() {
     let text = '';
     const entries = output.getElementsByClassName('transcript-entry');
     
@@ -63,23 +81,27 @@ function copyTranscript() {
     }
     
     if (text) {
-        navigator.clipboard.writeText(text).then(() => {
-            const originalTitle = copyBtn.title;
-            copyBtn.title = 'Copied!';
-            setTimeout(() => {
-                copyBtn.title = originalTitle;
-            }, 2000);
-        }).catch(err => {
+        try {
+            await navigator.clipboard.writeText(text);
+            showCopyFeedback();
+        } catch (err) {
             console.error('Failed to copy text:', err);
             status.textContent = 'Failed to copy text to clipboard';
-        });
+        }
     }
 }
 
+function showConfirmDialog() {
+    confirmDialog.classList.add('active');
+}
+
+function hideConfirmDialog() {
+    confirmDialog.classList.remove('active');
+}
+
 function clearTranscript() {
-    if (confirm('Are you sure you want to clear all transcripts?')) {
-        output.innerHTML = '';
-    }
+    output.innerHTML = '';
+    hideConfirmDialog();
 }
 
 function createRecognition() {
@@ -93,19 +115,18 @@ function createRecognition() {
     // Set recognition properties
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = languageSelect.value || 'en-US'; // Default to English if no language selected
+    recognition.lang = languageSelect.value || 'en-US';
 
     recognition.onstart = () => {
         isRecording = true;
         status.textContent = `Listening in ${languageSelect.options[languageSelect.selectedIndex].text}...`;
         startBtn.disabled = true;
         stopBtn.disabled = false;
-        languageSelect.disabled = false; // Allow language switching during recording
+        languageSelect.disabled = false;
     };
 
     recognition.onend = () => {
         if (isRecording) {
-            // Restart recognition if it was stopped unexpectedly
             recognition.start();
         } else {
             status.textContent = 'Click Start to begin recording';
@@ -159,13 +180,12 @@ function createRecognition() {
     return recognition;
 }
 
-// Handle language change during recording
+// Event Listeners
 languageSelect.addEventListener('change', () => {
     if (isRecording) {
         const selectedLanguage = languageSelect.options[languageSelect.selectedIndex].text;
         status.textContent = `Switching to ${selectedLanguage}...`;
         
-        // Restart recognition with new language
         if (recognition) {
             recognition.stop();
             recognition = createRecognition();
@@ -200,7 +220,16 @@ stopBtn.addEventListener('click', () => {
 });
 
 copyBtn.addEventListener('click', copyTranscript);
-clearBtn.addEventListener('click', clearTranscript);
+clearBtn.addEventListener('click', showConfirmDialog);
+confirmBtn.addEventListener('click', clearTranscript);
+cancelBtn.addEventListener('click', hideConfirmDialog);
+
+// Close dialog when clicking outside
+confirmDialog.addEventListener('click', (e) => {
+    if (e.target === confirmDialog) {
+        hideConfirmDialog();
+    }
+});
 
 // Handle page visibility changes
 document.addEventListener('visibilitychange', () => {

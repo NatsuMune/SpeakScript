@@ -71,14 +71,14 @@ h1 {
 .button {
     display: block;
     width: 100%;
-    padding: 15px;
+    padding: 16px;
     margin: 10px 0;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     background-color: #007AFF;
     color: white;
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     transition: background-color 0.2s;
@@ -87,6 +87,7 @@ h1 {
 
 .button:active {
     background-color: #0056b3;
+    transform: scale(0.98);
 }
 
 .button:disabled {
@@ -163,14 +164,44 @@ h1 {
 
 .action-buttons {
     display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-    padding: 8px;
+    gap: 12px;
+    justify-content: stretch;
+    padding: 12px;
     background: white;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-top: 12px;
     flex-shrink: 0;
+}
+
+.action-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 48px;
+    border: none;
+    border-radius: 10px;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+    padding: 0 16px;
+}
+
+.action-button:active {
+    background-color: #e0e0e0;
+    transform: scale(0.98);
+}
+
+.action-button svg {
+    width: 24px;
+    height: 24px;
+    fill: #666;
 }
 
 .icon-button {
@@ -199,4 +230,93 @@ h1 {
 
 .icon-button:hover svg {
     fill: #333;
+}
+
+.record-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+}
+
+.record-buttons .button {
+    flex: 1;
+    margin: 0;
+}
+
+.button-primary {
+    background-color: #007AFF;
+}
+
+.button-secondary {
+    background-color: #FF3B30;
+}
+
+.dialog-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.dialog {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    width: 100%;
+    max-width: 320px;
+    box-shadow: 0 4px 23px 0 rgba(0, 0, 0, 0.2);
+}
+
+.dialog h2 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.dialog p {
+    margin: 0 0 20px 0;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.dialog-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.dialog-button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.dialog-button-primary {
+    background-color: #FF3B30;
+    color: white;
+}
+
+.dialog-button:active {
+    opacity: 0.8;
+}
+
+.dialog-overlay.active {
+    display: flex;
 } 
