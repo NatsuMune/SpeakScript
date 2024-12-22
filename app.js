@@ -81,12 +81,47 @@ async function copyTranscript() {
     }
     
     if (text) {
+        // Try using the newer Clipboard API first
+        if (navigator.clipboard && window.isSecureContext) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showCopyFeedback();
+                return;
+            } catch (err) {
+                console.error('Clipboard API failed:', err);
+                // Fall through to fallback
+            }
+        }
+
+        // Fallback for iOS
         try {
-            await navigator.clipboard.writeText(text);
-            showCopyFeedback();
+            // Create temporary textarea
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            
+            // Select and copy
+            textArea.focus();
+            textArea.select();
+            const successful = document.execCommand('copy');
+            textArea.remove();
+
+            if (successful) {
+                showCopyFeedback();
+            } else {
+                throw new Error('execCommand failed');
+            }
         } catch (err) {
-            console.error('Failed to copy text:', err);
-            status.textContent = 'Failed to copy text to clipboard';
+            console.error('Fallback copy failed:', err);
+            // Show error message
+            const originalText = copyBtn.querySelector('span').textContent;
+            copyBtn.querySelector('span').textContent = 'Copy failed';
+            setTimeout(() => {
+                copyBtn.querySelector('span').textContent = originalText;
+            }, 2000);
         }
     }
 }
