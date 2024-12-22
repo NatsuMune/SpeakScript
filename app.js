@@ -15,6 +15,29 @@ if (!('webkitSpeechRecognition' in window)) {
     languageSelect.disabled = true;
 }
 
+function formatTimestamp(date) {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+}
+
+function getLanguageCode(fullCode) {
+    const langMap = {
+        'en': 'EN',
+        'es': 'ES',
+        'fr': 'FR',
+        'de': 'DE',
+        'it': 'IT',
+        'pt': 'PT',
+        'ru': 'RU',
+        'ja': 'JA',
+        'ko': 'KO',
+        'zh': 'ZH'
+    };
+    const mainLang = fullCode.split('-')[0].toLowerCase();
+    return langMap[mainLang] || mainLang.toUpperCase();
+}
+
 function createRecognition() {
     if (recognition) {
         recognition.stop();
@@ -63,9 +86,9 @@ function createRecognition() {
         }
 
         if (finalTranscript) {
-            const timestamp = new Date().toLocaleTimeString();
-            const language = languageSelect.options[languageSelect.selectedIndex].text;
-            output.value += `[${language} - ${timestamp}] ${finalTranscript}\n`;
+            const timestamp = formatTimestamp(new Date());
+            const langCode = getLanguageCode(languageSelect.value);
+            output.value += `_${timestamp}_ \`${langCode}\` ${finalTranscript}\n\n`;
             output.scrollTop = output.scrollHeight;
         }
     };
