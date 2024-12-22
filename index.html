@@ -31,7 +31,23 @@
         <button id="startBtn" class="button">Start Recording</button>
         <button id="stopBtn" class="button" disabled>Stop Recording</button>
         <div id="status" class="status">Click Start to begin recording</div>
-        <textarea id="output" class="output" readonly></textarea>
+        <div class="transcript-container">
+            <div id="output" class="transcript"></div>
+        </div>
+        <div class="action-buttons">
+            <button id="copyBtn" class="icon-button" title="Copy to clipboard">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                    <path d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+            </button>
+            <button id="clearBtn" class="icon-button" title="Clear transcript">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                    <path d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+            </button>
+        </div>
     </div>
     <script src="app.js"></script>
 </body>

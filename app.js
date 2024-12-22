@@ -4,6 +4,8 @@ const stopBtn = document.getElementById('stopBtn');
 const status = document.getElementById('status');
 const output = document.getElementById('output');
 const languageSelect = document.getElementById('languageSelect');
+const copyBtn = document.getElementById('copyBtn');
+const clearBtn = document.getElementById('clearBtn');
 
 let isRecording = false;
 
@@ -18,24 +20,66 @@ if (!('webkitSpeechRecognition' in window)) {
 function formatTimestamp(date) {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
 }
 
-function getLanguageCode(fullCode) {
-    const langMap = {
-        'en': 'EN',
-        'es': 'ES',
-        'fr': 'FR',
-        'de': 'DE',
-        'it': 'IT',
-        'pt': 'PT',
-        'ru': 'RU',
-        'ja': 'JA',
-        'ko': 'KO',
-        'zh': 'ZH'
-    };
-    const mainLang = fullCode.split('-')[0].toLowerCase();
-    return langMap[mainLang] || mainLang.toUpperCase();
+function createTranscriptEntry(timestamp, language, text) {
+    const entry = document.createElement('div');
+    entry.className = 'transcript-entry';
+
+    const meta = document.createElement('div');
+    meta.className = 'transcript-meta';
+
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'transcript-time';
+    timeSpan.textContent = timestamp;
+    meta.appendChild(timeSpan);
+
+    const langSpan = document.createElement('span');
+    langSpan.className = 'transcript-language';
+    langSpan.textContent = language;
+    meta.appendChild(langSpan);
+
+    const textDiv = document.createElement('div');
+    textDiv.className = 'transcript-text';
+    textDiv.textContent = text;
+
+    entry.appendChild(meta);
+    entry.appendChild(textDiv);
+
+    return entry;
+}
+
+function copyTranscript() {
+    let text = '';
+    const entries = output.getElementsByClassName('transcript-entry');
+    
+    for (const entry of entries) {
+        const time = entry.querySelector('.transcript-time').textContent;
+        const lang = entry.querySelector('.transcript-language').textContent;
+        const content = entry.querySelector('.transcript-text').textContent;
+        text += `[${time} - ${lang}] ${content}\n`;
+    }
+    
+    if (text) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalTitle = copyBtn.title;
+            copyBtn.title = 'Copied!';
+            setTimeout(() => {
+                copyBtn.title = originalTitle;
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy text:', err);
+            status.textContent = 'Failed to copy text to clipboard';
+        });
+    }
+}
+
+function clearTranscript() {
+    if (confirm('Are you sure you want to clear all transcripts?')) {
+        output.innerHTML = '';
+    }
 }
 
 function createRecognition() {
@@ -87,8 +131,9 @@ function createRecognition() {
 
         if (finalTranscript) {
             const timestamp = formatTimestamp(new Date());
-            const langCode = getLanguageCode(languageSelect.value);
-            output.value += `_${timestamp}_ \`${langCode}\` ${finalTranscript}\n\n`;
+            const language = languageSelect.options[languageSelect.selectedIndex].text;
+            const entry = createTranscriptEntry(timestamp, language, finalTranscript);
+            output.appendChild(entry);
             output.scrollTop = output.scrollHeight;
         }
     };
@@ -130,7 +175,6 @@ languageSelect.addEventListener('change', () => {
 });
 
 startBtn.addEventListener('click', () => {
-    output.value = '';
     isRecording = true;
     recognition = createRecognition();
     
@@ -154,6 +198,9 @@ stopBtn.addEventListener('click', () => {
     startBtn.disabled = false;
     stopBtn.disabled = true;
 });
+
+copyBtn.addEventListener('click', copyTranscript);
+clearBtn.addEventListener('click', clearTranscript);
 
 // Handle page visibility changes
 document.addEventListener('visibilitychange', () => {
