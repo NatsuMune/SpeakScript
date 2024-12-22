@@ -1,0 +1,12 @@
+{
+  "name": "speech-to-text-pwa",
+  "version": "1.0.0",
+  "description": "Speech to Text PWA for iPhone",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Speech to Text</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+</head>
+<body>
+    <div class="container">
+        <h1>Speech to Text</h1>
+        <div class="language-controls">
+            <label for="languageSelect" class="select-label">Select Language</label>
+            <select id="languageSelect" class="select">
+                <option value="en-US">English (US)</option>
+                <option value="es-ES">Spanish</option>
+                <option value="fr-FR">French</option>
+                <option value="de-DE">German</option>
+                <option value="it-IT">Italian</option>
+                <option value="pt-BR">Portuguese</option>
+                <option value="ru-RU">Russian</option>
+                <option value="ja-JP">Japanese</option>
+                <option value="ko-KR">Korean</option>
+                <option value="zh-CN">Chinese (Simplified)</option>
+            </select>
+        </div>
+        <button id="startBtn" class="button">Start Recording</button>
+        <button id="stopBtn" class="button" disabled>Stop Recording</button>
+        <div id="status" class="status">Click Start to begin recording</div>
+        <textarea id="output" class="output" readonly></textarea>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html> 
