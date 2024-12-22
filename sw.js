@@ -1,12 +1,12 @@
 const CACHE_NAME = 'speakscript-v1';
 const ASSETS = [
-    '/',
-    '/index.html',
-    '/styles.css',
-    '/app.js',
-    '/manifest.json',
-    '/icons/icon-192x192.png',
-    '/icons/icon-512x512.png'
+    './',
+    'index.html',
+    'styles.css',
+    'app.js',
+    'manifest.json',
+    'icons/icon-192x192.png',
+    'icons/icon-512x512.png'
 ];
 
 // Install event - cache all static assets
@@ -40,7 +40,7 @@ self.addEventListener('activate', event => {
 // Fetch event - serve from cache, fall back to network
 self.addEventListener('fetch', event => {
     event.respondWith(
-        caches.match(event.request)
+        caches.match(event.request, { ignoreSearch: true })
             .then(response => {
                 // Return cached response if found
                 if (response) {
@@ -51,29 +51,32 @@ self.addEventListener('fetch', event => {
                 const fetchRequest = event.request.clone();
 
                 // Make network request and cache the response
-                return fetch(fetchRequest).then(response => {
-                    // Check if response is valid
-                    if (!response || response.status !== 200 || response.type !== 'basic') {
+                return fetch(fetchRequest)
+                    .then(response => {
+                        // Check if response is valid
+                        if (!response || response.status !== 200 || response.type !== 'basic') {
+                            return response;
+                        }
+
+                        // Clone the response because it can only be used once
+                        const responseToCache = response.clone();
+
+                        // Add response to cache
+                        caches.open(CACHE_NAME)
+                            .then(cache => {
+                                const url = new URL(event.request.url);
+                                cache.put(url.pathname, responseToCache);
+                            });
+
                         return response;
-                    }
-
-                    // Clone the response because it can only be used once
-                    const responseToCache = response.clone();
-
-                    // Add response to cache
-                    caches.open(CACHE_NAME)
-                        .then(cache => {
-                            cache.put(event.request, responseToCache);
-                        });
-
-                    return response;
-                }).catch(() => {
-                    // If offline and resource not in cache, return a custom offline page or error
-                    if (event.request.mode === 'navigate') {
-                        return caches.match('/index.html');
-                    }
-                    return new Response('Offline - Resource not available');
-                });
+                    })
+                    .catch(() => {
+                        // If offline and resource not in cache, return cached index.html
+                        if (event.request.mode === 'navigate') {
+                            return caches.match('index.html');
+                        }
+                        return new Response('Offline - Resource not available');
+                    });
             })
     );
 });

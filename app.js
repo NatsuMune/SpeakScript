@@ -277,9 +277,40 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
-// Add this at the beginning of app.js
+// Update the Service Worker registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+        try {
+            const registration = await navigator.serviceWorker.register('sw.js');
+            console.log('ServiceWorker registration successful with scope:', registration.scope);
+
+            // Check for updates
+            registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        // New content is available, show refresh prompt
+                        if (confirm('New version available! Click OK to refresh.')) {
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
+
+            // Initial online/offline status
+            updateOnlineStatus();
+        } catch (err) {
+            console.error('ServiceWorker registration failed:', err);
+        }
+    });
+}
+
+// Add these event listeners for online/offline status
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
+// Update online status function
 function updateOnlineStatus() {
-    const status = document.getElementById('status');
     if (!navigator.onLine) {
         status.textContent = 'Offline mode - Some features may be limited';
         status.style.backgroundColor = '#fff3cd';
@@ -293,37 +324,8 @@ function updateOnlineStatus() {
         status.style.color = '';
         status.style.padding = '';
         status.style.borderRadius = '';
-        startBtn.disabled = false;
+        if ('webkitSpeechRecognition' in window) {
+            startBtn.disabled = false;
+        }
     }
-}
-
-// Add these event listeners after the existing ones
-window.addEventListener('online', updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
-
-// Update the Service Worker registration
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-                console.log('ServiceWorker registered with scope:', registration.scope);
-                
-                // Check for updates
-                registration.addEventListener('updatefound', () => {
-                    const newWorker = registration.installing;
-                    newWorker.addEventListener('statechange', () => {
-                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            // New content is available, show refresh prompt
-                            if (confirm('New version available! Click OK to refresh.')) {
-                                window.location.reload();
-                            }
-                        }
-                    });
-                });
-            })
-            .catch(err => console.error('ServiceWorker registration failed:', err));
-    });
-
-    // Handle offline mode on initial load
-    updateOnlineStatus();
 } 
