@@ -9,6 +9,8 @@ const clearBtn = document.getElementById('clearBtn');
 const confirmDialog = document.getElementById('confirmDialog');
 const confirmBtn = document.getElementById('confirmBtn');
 const cancelBtn = document.getElementById('cancelBtn');
+const pwaPrompt = document.getElementById('pwaPrompt');
+const closePwaPrompt = document.getElementById('closePwaPrompt');
 
 let isRecording = false;
 
@@ -19,6 +21,23 @@ if (!('webkitSpeechRecognition' in window)) {
     stopBtn.disabled = true;
     languageSelect.disabled = true;
 }
+
+// Check if the app is running as a PWA
+const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+              window.navigator.standalone;
+
+// Show PWA prompt if not running as PWA
+if (!isPWA) {
+    // Wait a bit before showing the prompt
+    setTimeout(() => {
+        pwaPrompt.classList.add('show');
+    }, 2000);
+}
+
+// Close PWA prompt (just hide it temporarily)
+closePwaPrompt.addEventListener('click', () => {
+    pwaPrompt.classList.remove('show');
+});
 
 function formatTimestamp(date) {
     const hours = date.getHours().toString().padStart(2, '0');

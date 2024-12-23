@@ -489,3 +489,103 @@ body.offline .transcript-container {
         opacity: 1;
     }
 }
+
+/* PWA Installation Prompt */
+.pwa-prompt {
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 20px;
+    color: white;
+    z-index: 2000;
+    transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+}
+
+.pwa-prompt.show {
+    bottom: 0;
+}
+
+.pwa-content {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.pwa-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pwa-close svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
+}
+
+.pwa-message {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.pwa-message h3 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.pwa-message p {
+    margin: 0 0 20px 0;
+    opacity: 0.8;
+    font-size: 16px;
+}
+
+.pwa-install-guide {
+    width: 100%;
+    max-width: 300px;
+    height: 200px;
+    object-fit: contain;
+    margin: 16px 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+}
+
+.pwa-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+    margin-top: 20px;
+}
+
+.pwa-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pwa-step .step-number {
+    background: #007AFF;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    flex-shrink: 0;
+}
