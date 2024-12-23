@@ -20,13 +20,6 @@ if (!('webkitSpeechRecognition' in window)) {
     languageSelect.disabled = true;
 }
 
-if (!navigator.onLine) {
-    status.textContent = 'Please connect to the internet to use this application';
-    startBtn.disabled = true;
-    stopBtn.disabled = true;
-    languageSelect.disabled = true;
-}
-
 function formatTimestamp(date) {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
