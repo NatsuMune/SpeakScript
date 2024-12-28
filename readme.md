@@ -17,6 +17,9 @@ Speech to Text PWA is a Progressive Web Application that allows users to convert
 - Web Speech API
 - Express.js (for serving the application)
 
+## Demo
+https://natsumune.github.io/SpeakScript/
+
 ## Installation
 
 ### Prerequisites
